@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #333;
+  }
+
+  .auth-card {
+    max-width: 400px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
+    text-align: center;
+    animation: fadeInUp 0.8s ease;
+  }
+
+  .auth-card h1 {
+    margin-bottom: 20px;
+    font-size: 26px;
+    color: #444;
+  }
+
+  .auth-input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  .auth-input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 6px rgba(102,126,234,0.6);
+  }
+
+  .auth-btn {
+    width: 90%;
+    padding: 12px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .auth-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+  }
+
+  .note {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  @keyframes fadeInUp {
+    from {opacity: 0; transform: translateY(30px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+</style>
+
+<div class="auth-card">
+  <h1> Welcome To Shrut Gyan Kosh</h1>
+  <input type="email" id="email" class="auth-input" placeholder="Enter Email" required>
+  <input type="password" id="password" class="auth-input" placeholder="Enter Password" required>
+
+  <button class="auth-btn" onclick="signup()">📝 Sign Up</button>
+  <button class="auth-btn" onclick="login()">🔐 Login</button>
+
+  <p class="note">✨ Please verify your email after signup before login</p>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } 
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBZYrC0eZlFyVf_EfhxZtJeH53jOqu8JRc",
+    authDomain: "shrut-gyan-kosh-final-self.firebaseapp.com",
+    projectId: "shrut-gyan-kosh-final-self",
+    storageBucket: "shrut-gyan-kosh-final-self.appspot.com",
+    messagingSenderId: "554252251591",
+    appId: "1:554252251591:web:5dd4035fa0df47cfdb69e2",
+    measurementId: "G-VZ6E7XH9F1"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Signup
+  window.signup = function() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        sendEmailVerification(user).then(() => {
+          alert("✅ Signup successful! Please check your email to verify before logging in.");
+        });
+      })
+      .catch((error) => {
+        alert("❌ " + error.message);
+      });
+  }
+
+  // Login
+  window.login = function() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        if (!user.emailVerified) {
+          alert("⚠️ Please verify your email before logging in.");
+          return;
+        }
+        user.getIdToken().then((idToken) => {
+          fetch("/sessionLogin", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ idToken }),
+          }).then(() => {
+            window.location.href = "/";
+          });
+        });
+      })
+      .catch((error) => {
+        alert("❌ " + error.message);
+      });
+  }
+</script>
+
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(135deg, #ff9966, #ff5e62);
+    animation: gradientShift 8s infinite alternate;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  @keyframes gradientShift {
+    0% { background: linear-gradient(135deg, #ff9966, #ff5e62); }
+    100% { background: linear-gradient(135deg, #36d1dc, #5b86e5); }
+  }
+
+  .supporters-section {
+    text-align: center;
+    padding: 50px 20px;
+    animation: fadeInUp 1s ease-in-out;
+  }
+
+  .supporters-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+    animation: pulse 2s infinite;
+  }
+
+  .supporter-card {
+    background: rgba(255,255,255,0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 600px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    animation: fadeInUp 1s ease-in-out;
+  }
+
+  .supporter-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+  }
+
+  .supporter-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    animation: bounce 2s infinite;
+  }
+
+  .supporter-card h3 {
+    margin: 10px 0;
+    font-size: 1.3rem;
+    color: #fff;
+  }
+
+  .supporter-card p {
+    font-size: 1rem;
+    color: #f0f0f0;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { text-shadow: 0 0 5px #fff, 0 0 10px #ff5e62; }
+    50% { text-shadow: 0 0 20px #fff, 0 0 30px #36d1dc; }
+  }
+</style>
+
+<div class="supporters-section">
+  <h1>🌟 Our Supporters 🌟</h1>
+
+  <div class="supporter-card">
+    <img src="{{ url_for('static', filename='supporters/aashish.jpg') }}" alt="Aashish Jain">
+    <h3>C.A. Aashish Jain</h3>
+    <p><strong>Our All-time Supporter ✨</strong></p>
+  </div>
+
+  <div class="supporter-card">
+    <img src="{{ url_for('static', filename='supporters/shanti-dhara.jpg') }}" alt="Shanti Dhara">
+    <h3>शांति धारा</h3>
+    <p>प्राचीन भारतीय संस्कृति के करुणा-संस्कारों को पुनर्जीवित करने का एक अनुपम प्रयास है, जो समाज में दया, शांति और अध्यात्म का अमृत संचार करता है।"</p>
+  </div>
+
+  <div class="supporter-card">
+    <img src="{{ url_for('static', filename='supporters/harit-kranti.jpg') }}" alt="Harit Kranti">
+    <h3>हथकरघा</h3>
+    <p>आचार्य महाराज की प्रेरणा से प्रारंभ एक आत्मनिर्भरता आंदोलन, जिसने ग्रामोद्योग, स्वदेशी परंपरा और रोज़गार को नया जीवन दिया।"।</p>
+  </div>
+
+  <div class="supporter-card">
+    <img src="{{ url_for('static', filename='supporters/arham-dhyan-yog.jpg') }}" alt="Arham Dhyan Yog">
+    <h3>अर्हं ध्यान योग</h3>
+    <p>अर्हं ध्यान योग, भारतीय श्रमण सिद्धांतों "ध्यान योग" की सबसे प्राचीन योग तकनीक है। यह मुनि श्री प्रणम्य सागर जी महाराज द्वारा प्रतिपादित अग्रणी योग संस्थानों में से एक है और भारत सरकार के आयुष मंत्रालय द्वारा मान्यता प्राप्त है। यह व्यक्तिगत स्तर पर शरीर, मन और आत्मा के विभिन्न स्तरों पर कार्य करके वैश्विक शांति के व्यापक उद्देश्य की दिशा में कार्यरत है।।</p>
+  </div>
+</div>
+{% endblock %}

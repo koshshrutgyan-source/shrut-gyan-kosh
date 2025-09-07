@@ -1,0 +1,5 @@
+venv/
+__pycache__/
+*.xlsx
+firebase_key.json
+gsheet_key.json

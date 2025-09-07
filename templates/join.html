@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1 class="text-3xl font-bold mb-6">🤝 Join Us</h1>
+
+  <form method="POST" action="/join" 
+        style="max-width:500px; margin:auto; background:white; padding:30px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+    
+    <input type="text" name="name" placeholder="Full Name" required
+           style="width:100%; margin-bottom:15px; padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s;"
+           onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ccc'">
+    
+    <input type="email" name="email" placeholder="Email Address" required
+           style="width:100%; margin-bottom:15px; padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s;"
+           onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ccc'">
+    
+    <input type="text" name="mobile" placeholder="Mobile Number" required
+           style="width:100%; margin-bottom:15px; padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s;"
+           onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ccc'">
+    
+    <input type="text" name="city" placeholder="City" required
+           style="width:100%; margin-bottom:15px; padding:12px; border:1px solid #ccc; border-radius:8px; transition:0.3s;"
+           onfocus="this.style.borderColor='#007bff'" onblur="this.style.borderColor='#ccc'">
+
+    <button type="submit"
+            style="width:100%; padding:12px; border:none; border-radius:8px; background:#007bff; color:white; font-size:16px; cursor:pointer; transition:0.3s;"
+            onmouseover="this.style.background='#0056b3'" onmouseout="this.style.background='#007bff'">
+      🚀 Submit
+    </button>
+  </form>
+{% endblock %}

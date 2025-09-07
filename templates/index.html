@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero Section -->
+<div style="text-align:center; padding:60px; background: linear-gradient(135deg, #f0f4ff, #e6ecff); border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); animation: fadeIn 1.5s ease-in-out;">
+    
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Shrut Gyan Kosh Logo" 
+         style="height:120px; margin-bottom:20px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.2); animation: bounce 2s infinite;">
+    
+    <!-- Website Name -->
+    <h1 style="font-size:3rem; color:#2c3e50; margin-bottom:15px; animation: slideDown 1.2s ease-out;">
+        📚 Shrut Gyan Kosh
+    </h1>
+
+    <!-- Tagline -->
+    <p style="font-size:1.3rem; color:#555; margin-bottom:30px; animation: fadeIn 2s ease-in;">
+        Unlocking Knowledge, Preserving Wisdom
+    </p>
+
+    <!-- Call to Action -->
+    {% if session.get('user') %}
+        <!-- If logged in → go to search -->
+        <a href="{{ url_for('search') }}" 
+           style="background:#4a90e2; color:white; padding:12px 25px; border-radius:8px; font-size:1.2rem; text-decoration:none; transition:0.3s; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+           🔍 Start Exploring
+        </a>
+    {% else %}
+        <!-- If NOT logged in → go to login -->
+        <a href="{{ url_for('login') }}" 
+           style="background:#e74c3c; color:white; padding:12px 25px; border-radius:8px; font-size:1.2rem; text-decoration:none; transition:0.3s; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+           🔑 Login to Explore
+        </a>
+    {% endif %}
+</div>
+
+<!-- Animations -->
+<style>
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+</style>
+
+{% endblock %}

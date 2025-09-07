@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+html { scroll-behavior: smooth; }
+
+/* Background Gradient + Overlay Image */
+body {
+  background: linear-gradient(135deg, #ffecd2, #fcb69f);
+  background-attachment: fixed;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.team-wrap {
+  margin: 50px auto;
+  max-width: 1300px;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+.team-wrap::before {
+  content: "";
+  background: url("{{ url_for('static', filename='images/team-bg.jpg') }}") center/cover no-repeat;
+  opacity: 0.12;
+  top: 0; left: 0; width: 100%; height: 100%;
+  position: absolute; z-index: -1;
+}
+
+/* Header */
+.team-header { text-align: center; margin-bottom: 24px; animation: fadeInDown 0.9s ease; }
+.team-header h1 { font-size: 2.6rem; color: #222; margin: 0 0 8px; }
+.team-header p { color: #444; }
+
+/* Section Tabs (quick jump bar) */
+.section-tabs {
+  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+  margin: 14px auto 30px;
+}
+.section-tabs a {
+  text-decoration: none; font-weight: 600; font-size: 0.95rem;
+  padding: 10px 14px; border-radius: 999px; color: #fff;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+  opacity: 0.95;
+}
+.section-tabs a:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(0,0,0,0.22); opacity: 1; }
+
+/* Section Bar (designation headings) */
+.section-bar {
+  display: flex; align-items: center; gap: 12px;
+  margin: 34px 0 14px;
+}
+.section-bar .bar {
+  flex: 1; height: 3px;
+  background: linear-gradient(90deg, rgba(238,9,121,.35), rgba(255,106,0,.35));
+  border-radius: 3px;
+}
+.section-bar h2 {
+  margin: 0; white-space: nowrap;
+  font-size: 1.35rem; letter-spacing: .2px; color: #222;
+  padding: 6px 14px; border-radius: 999px;
+  background: rgba(255,255,255,0.8); backdrop-filter: blur(6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* Grid */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  animation: fadeInUp 0.8s ease;
+}
+
+/* Cards */
+.team-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  animation: floatCard 5s ease-in-out infinite;
+}
+.team-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 16px 36px rgba(0,0,0,0.25); }
+
+/* Avatar */
+.team-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: linear-gradient(135deg, #ff6a00, #ee0979);
+  color: #fff; font-size: 26px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.team-card:hover .team-avatar { transform: scale(1.12) rotate(6deg); box-shadow: 0 10px 22px rgba(255,0,100,0.28); }
+
+/* Text */
+.team-card h3 { margin: 8px 0 6px; font-size: 1.22rem; color: #111; }
+.team-card p { margin: 3px 0; font-size: 0.96rem; color: #555; }
+
+/* Animations */
+@keyframes fadeInUp { from {opacity: 0; transform: translateY(40px);} to {opacity:1; transform: translateY(0);} }
+@keyframes fadeInDown { from {opacity: 0; transform: translateY(-40px);} to {opacity:1; transform: translateY(0);} }
+@keyframes floatCard { 0%,100%{transform: translateY(0)} 50%{transform: translateY(-10px)} }
+</style>
+
+<div class="team-wrap">
+
+  <div class="team-header">
+    <h1>👥 Our Team</h1>
+    <p>Meet the people who make <b>Shrut Gyan Kosh</b> possible</p>
+  </div>
+
+  <!-- Quick jump section bar -->
+  <div class="section-tabs">
+    <a href="#governing">Governing</a>
+    <a href="#operations">Operation Administrative</a>
+    <a href="#research">Research & Preservation Team</a>
+    <a href="#academic">Academic & Outreach</a>
+    <a href="#advisory">Advisory Board</a>
+  </div>
+
+  <!-- Governing -->
+  <div id="governing" class="section-bar">
+    <div class="bar"></div><h2>Governing</h2><div class="bar"></div>
+  </div>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-avatar">VJ</div><h3>Vaibhav Jain</h3><p>Chair person — NIA scholar</p></div>
+    <div class="team-card"><div class="team-avatar">SS</div><h3>Siddhant Shah</h3><p>Vice chair person — CA finalist</p></div>
+    <div class="team-card"><div class="team-avatar">PJ</div><h3>Prasann Jain</h3><p>Secetary — PGDCA</p></div>
+    <div class="team-card"><div class="team-avatar">AJ</div><h3>Atishay Jain</h3><p>Treasurer — NIT Trichy scholar</p></div>
+    <div class="team-card"><div class="team-avatar">DJ</div><h3>Devansh Jain</h3><p>Board member — B.Sc. B.Ed</p></div>
+  </div>
+
+  <!-- Operation Administrative -->
+  <div id="operations" class="section-bar">
+    <div class="bar"></div><h2>Operation Administrative</h2><div class="bar"></div>
+  </div>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-avatar">AJ</div><h3>Abhiduya Jain</h3><p>Administrative officer — TMU scholar</p></div>
+    <div class="team-card"><div class="team-avatar">RJ</div><h3>Ritik Jain</h3><p>Office superintendent — MA in Sanskrit</p></div>
+  </div>
+
+  <!-- Research & Preservation Team -->
+  <div id="research" class="section-bar">
+    <div class="bar"></div><h2>Research and Preservation Team</h2><div class="bar"></div>
+  </div>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-avatar">DK</div><h3>Deepak Kumar Jain</h3><p>Director — NIA scholar</p></div>
+    <div class="team-card"><div class="team-avatar">AJ</div><h3>Ayush Jain</h3><p>Head archivist — NIA scholar</p></div>
+    <div class="team-card"><div class="team-avatar">SJ</div><h3>Saiyam Jain</h3><p>Conservation officer — MA in Sanskrit</p></div>
+    <div class="team-card"><div class="team-avatar">AJ</div><h3>Arnima Jain</h3><p>Librarian — MA in Sanskrit</p></div>
+  </div>
+
+  <!-- Academic & Outreach -->
+  <div id="academic" class="section-bar">
+    <div class="bar"></div><h2>Academic and Outreach</h2><div class="bar"></div>
+  </div>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-avatar">DJ</div><h3>Dhairya Jain</h3><p>Education training coordinator & IT manager — BTech final year scholar</p></div>
+    <div class="team-card"><div class="team-avatar">DJ</div><h3>Deepak Jain</h3><p>Publication officer — M.B.A</p></div>
+    <div class="team-card"><div class="team-avatar">AJ</div><h3>Akshansh Jain</h3><p>Project manager & cultural programe coordinator — MA in Sanskrit</p></div>
+  </div>
+
+  <!-- Advisory Board -->
+  <div id="advisory" class="section-bar">
+    <div class="bar"></div><h2>Advisory Board</h2><div class="bar"></div>
+  </div>
+  <div class="team-grid">
+    <div class="team-card"><div class="team-avatar">SJ</div><h3>Shubham Jain</h3><p>Chief advisor & financial advisor — CA finalist</p></div>
+    <div class="team-card"><div class="team-avatar">AJ</div><h3>Archit Jain</h3><p>Fellow — NEET aspirant</p></div>
+  </div>
+
+</div>
+{% endblock %}

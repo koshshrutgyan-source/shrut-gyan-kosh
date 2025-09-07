@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .about-container {
+      position: relative;
+      max-width: 900px;
+      margin: auto;
+      padding: 40px;
+      text-align: center;
+      color: #222;
+      z-index: 2;
+  }
+
+  .about-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url("{{ url_for('static', filename='about-bg.png') }}") center/cover no-repeat;
+      opacity: 0.15;
+      animation: fadeZoom 2s ease-in-out;
+      z-index: 1;
+  }
+
+  @keyframes fadeZoom {
+      0% {
+          opacity: 0;
+          transform: scale(1.1);
+      }
+      100% {
+          opacity: 0.15;
+          transform: scale(1);
+      }
+  }
+
+  .about-container h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      animation: slideDown 1.2s ease;
+  }
+
+  .about-container p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-top: 15px;
+      animation: fadeInUp 1.5s ease;
+  }
+
+  @keyframes slideDown {
+      from {
+          opacity: 0;
+          transform: translateY(-30px);
+      }
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  }
+
+  @keyframes fadeInUp {
+      from {
+          opacity: 0;
+          transform: translateY(30px);
+      }
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  }
+  .about-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("{{ url_for('static', filename='about-bg.png') }}") center/cover no-repeat;
+    opacity: 0.15;
+    animation: fadeZoom 2s ease-in-out;
+    z-index: -1;   /* ✅ push behind everything */
+}
+
+</style>
+
+<div class="about-bg"></div>
+
+<div class="about-container">
+    <h1>ℹ️ About Shrut Gyan Kosh</h1>
+    <p>
+               Shrut Gyan Kosh is a digital manuscripts library dedicated to preserving and sharing Ancient Indian knowledge.  
+        Our mission is to provide free access to rare manuscripts to everyone in world for helping Scholars , Institutes And Other Educational Programmes 
+
+    </p>
+    <p>
+                We Are Wholeheartdly Thankful To Arham Dhyan Yog And All Of Our Work Is done With Holy Blessing Of Acharya Shri 108 Vidyasagar Ji Maharaj
+    </p>
+</div>
+{% endblock %}

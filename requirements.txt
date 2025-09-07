@@ -1,0 +1,7 @@
+flask
+pandas
+firebase-admin
+gspread
+oauth2client
+openpyxl
+gunicorn

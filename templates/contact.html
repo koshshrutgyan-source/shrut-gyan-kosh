@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* Background Gradient + Image */
+body {
+  background: linear-gradient(135deg, #e0f7fa, #e1bee7);
+  background-attachment: fixed;
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Contact Section */
+.contact-section {
+  margin: 50px auto;
+  max-width: 1200px;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Transparent overlay effect */
+.contact-section::before {
+  content: "";
+  background: url("/static/images/contact-bg.jpg") center/cover no-repeat;
+  opacity: 0.15;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  position: absolute;
+  z-index: -1;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeInDown 1s ease;
+}
+
+.contact-header h1 {
+  font-size: 2.7rem;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+.contact-header p {
+  font-size: 1.1rem;
+  color: #444;
+}
+
+/* Contact Cards Grid */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 30px;
+  animation: fadeInUp 1s ease;
+}
+
+/* Cards */
+.contact-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  animation: floatCard 4s ease-in-out infinite;
+}
+
+.contact-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+/* Avatar */
+.contact-avatar {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007bff, #00c6ff);
+  color: white;
+  font-size: 26px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+
+/* Text */
+.contact-card h3 {
+  margin: 8px 0 5px;
+  font-size: 1.3rem;
+  color: #111;
+}
+
+.contact-card p {
+  margin: 3px 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.contact-card a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #007bff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.contact-card a:hover {
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {opacity: 0; transform: translateY(40px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadeInDown {
+  from {opacity: 0; transform: translateY(-40px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes floatCard {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+</style>
+
+<div class="contact-section">
+  <div class="contact-header">
+    <h1>📞 Contact Us</h1>
+    <p>Reach out to our team members or email us at <b>Shrut Gyan Kosh</b></p>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="contact-avatar">PJ</div>
+      <h3>Prasan Jain</h3>
+      <p>Secretary</p>
+      <p>📱 +91 91318 78011</p>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-avatar">SJ</div>
+      <h3>Saiyam Jain</h3>
+      <p>Conservation Officer</p>
+      <p>📱 +91 70247 82347</p>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-avatar">AJ</div>
+      <h3>Akshansh Jain</h3>
+      <p>Project Manager</p>
+      <p>📱 +91 90394 06751</p>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-avatar">SG</div>
+      <h3>Shrut Gyan Kosh</h3>
+      <p>Email Us</p>
+      <a href="mailto:shrutgyankosh@gmail.com">shrutgyankosh@gmail.com</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

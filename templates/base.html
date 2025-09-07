@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shrut Gyan Kosh</title>
+
+  <!-- Global styles -->
+  <style>
+    /* Login button custom style */
+.btn-login {
+  background: linear-gradient(45deg, #3b82f6, #6366f1); /* blue → indigo */
+  color: white !important;
+  border: none;
+  transition: all 0.3s ease-in-out;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 8px;
+}
+
+.btn-login:hover {
+  background: linear-gradient(45deg, #7c3aed, #4338ca); /* purple → deep indigo */
+  transform: scale(1.05);
+  color: #fff !important;
+}
+    .flash {
+  padding: 10px;
+  margin: 12px 0;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* Flash categories */
+.flash.success { background:#d4edda; color:#155724; }
+.flash.warning { background:#fff3cd; color:#856404; }
+.flash.danger  { background:#f8d7da; color:#721c24; }
+.flash.info    { background:#cce5ff; color:#004085; }
+    :root {
+      --maxw: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background: #f7f8fc;
+      color: #1d1d1f;
+      line-height: 1.5;
+    }
+
+    /* ============ NAVBAR ============ */
+    .sgk-nav {
+      position: sticky; top: 0; z-index: 1000;
+      background: linear-gradient(270deg, #6a11cb, #2575fc, #ff6a00, #ee0979);
+      background-size: 800% 800%;
+      animation: sgkGradient 14s ease infinite;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+    }
+    .sgk-nav__container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 10px 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+
+    /* Brand */
+    .sgk-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .sgk-brand img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,.25); }
+    .sgk-brand span { color: #fff; font-weight: 800; letter-spacing: .5px; font-size: 1.1rem; white-space: nowrap; }
+
+    /* Links row */
+    .sgk-links { display: flex; align-items: center; gap: 14px; }
+    .sgk-links a {
+      color: #fff; text-decoration: none; padding: 6px 8px; position: relative; font-weight: 600; opacity: .95;
+      display: inline-block;
+    }
+    .sgk-links a::after {
+      content: ""; position: absolute; left: 8px; right: 8px; bottom: 2px; height: 2px;
+      background: #fff; transform: scaleX(0); transform-origin: left; transition: transform .25s ease;
+    }
+    .sgk-links a:hover { color: #fffb8f; text-shadow: 0 0 6px rgba(255,255,255,.65); }
+    .sgk-links a:hover::after { transform: scaleX(1); }
+
+    .sgk-user {
+      color: #fff; background: rgba(255,255,255,.18);
+      padding: 6px 10px; border-radius: 999px; margin-left: 6px; backdrop-filter: blur(4px);
+      white-space: nowrap;
+    }
+
+    .sgk-btn {
+      padding: 8px 12px; border-radius: 10px; text-decoration: none; font-weight: 700;
+      border: 1px solid rgba(255,255,255,.35); backdrop-filter: blur(4px); transition: transform .2s ease, box-shadow .2s ease;
+      display: inline-block;
+    }
+    .sgk-btn--light { color: #222; background: #fff; }
+    .sgk-btn--danger { color: #fff; background: rgba(220,53,69,.92); border-color: rgba(220,53,69,1); }
+    .sgk-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.25); }
+
+    /* Burger (mobile) */
+    .sgk-burger { display: none; background: transparent; border: 0; cursor: pointer; }
+    .sgk-burger span {
+      display: block; width: 24px; height: 3px; margin: 4px 0; background: #fff; border-radius: 2px;
+    }
+
+    /* Responsive: collapse to drawer */
+    @media (max-width: 900px) {
+      .sgk-burger { display: block; }
+      .sgk-links {
+        position: absolute; left: 0; right: 0; top: 58px;
+        background: rgba(10,10,10,.6); backdrop-filter: blur(8px);
+        flex-direction: column; align-items: flex-start; gap: 8px;
+        padding: 12px 16px; transform: translateY(-12px); opacity: 0; pointer-events: none; transition: .25s ease;
+      }
+      .sgk-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+      .sgk-links a, .sgk-user, .sgk-btn { margin-left: 4px; }
+    }
+     
+    /* Gradient animation */
+    @keyframes sgkGradient {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    /* ============ PAGE CONTENT ============ */
+    .page {
+      max-width: var(--maxw);
+      margin: 24px auto;
+      padding: 0 18px 32px;
+    }
+
+    /* Flash messages */
+    .flash {
+      padding:10px; margin:12px 0; border-radius:8px; font-weight:600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🌈 Animated Gradient Navbar (pure CSS) -->
+  <header class="sgk-nav">
+    <div class="sgk-nav__container">
+      <!-- Brand -->
+      <a class="sgk-brand" href="{{ url_for('home') }}">
+        <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Logo">
+        <span>Shrut Gyan Kosh</span>
+      </a>
+
+      <!-- Mobile toggle -->
+      <button class="sgk-burger" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- Links -->
+      <nav class="sgk-links" id="navLinks">
+        <a href="{{ url_for('home') }}">Home</a>
+        <a href="{{ url_for('about') }}">About</a>
+        <a href="{{ url_for('team') }}">Team</a>
+        <a href="{{ url_for('contact') }}">Contact</a>
+        <a href="{{ url_for('join') }}">Join Us</a>
+        <a href="{{ url_for('search') }}">Search</a>
+
+        {% if session.get("user") %}
+          <span class="sgk-user">👤 {{ session.get("name") or session.get("user") }}</span>
+          <a href="{{ url_for('logout') }}" class="sgk-btn sgk-btn--danger">Logout</a>
+        {% else %}
+          <a class="btn btn-login btn-sm" href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+        <a href="{{ url_for('supporters') }}">🌟 Supporters</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Flash messages -->
+  <div class="page">
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+    <!-- Page-specific content goes here -->
+    {% block content %}{% endblock %}
+  </div>
+
+  <script>
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function(){
+      const btn = document.getElementById('navToggle');
+      const links = document.getElementById('navLinks');
+      if (btn && links) btn.addEventListener('click', () => links.classList.toggle('open'));
+    });
+  </script>
+
+<!-- 🚀 Device Warning Modal -->
+<div id="deviceModal" class="device-modal">
+  <div class="device-modal-content">
+    <h2>⚠️ Best Viewed on Desktop</h2>
+    <p>
+      For the best experience, please open this website on a laptop or desktop.
+    </p>
+    <button id="closeModal">Got it 👍</button>
+  </div>
+</div>
+
+<style>
+  /* Modal Background */
+  .device-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  /* Modal Box */
+  .device-modal-content {
+    background: linear-gradient(135deg, #ffecd2, #fcb69f);
+    color: #333;
+    padding: 25px 35px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.6s ease-out;
+  }
+
+  .device-modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 22px;
+  }
+
+  .device-modal-content p {
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+
+  /* Button */
+  .device-modal-content button {
+    background: #ff5722;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .device-modal-content button:hover {
+    background: #e64a19;
+    transform: scale(1.05);
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Detect if device width is less than 992px (tablet/mobile)
+    if (window.innerWidth < 992) {
+      const modal = document.getElementById("deviceModal");
+      const closeBtn = document.getElementById("closeModal");
+
+      if (modal) {
+        modal.style.display = "flex"; // Show modal
+
+        if (closeBtn) {
+          closeBtn.addEventListener("click", function () {
+            modal.style.display = "none";
+          });
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
