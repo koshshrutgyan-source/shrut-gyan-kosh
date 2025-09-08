@@ -1,29 +1,57 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session  # type: ignore
-import pandas as pd  # type: ignore
+import os
+import json
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+import pandas as pd
 from functools import wraps
-import firebase_admin  # type: ignore
-from firebase_admin import credentials, auth  # type: ignore
-import gspread  # type: ignore # NEW ✅
-from oauth2client.service_account import ServiceAccountCredentials  # type: ignore # NEW ✅
-
+import firebase_admin
+from firebase_admin import credentials, auth
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # ----------------- Firebase Init -----------------
-cred = credentials.Certificate("firebase_key.json")  # 🔑 your Firebase key JSON
-firebase_admin.initialize_app(cred)
+def get_firebase_cred():
+    # Try to load from env variable (for Render/Heroku)
+    firebase_env = os.environ.get("FIREBASE_KEY_JSON")
+    if firebase_env:
+        return credentials.Certificate(json.loads(firebase_env))
+    # Fallback: try to load from file (for local dev)
+    if os.path.exists("firebase_key.json"):
+        return credentials.Certificate("firebase_key.json")
+    raise RuntimeError("Firebase credentials not found in environment variable or firebase_key.json file.")
+
+try:
+    cred = get_firebase_cred()
+    firebase_admin.initialize_app(cred)
+except Exception as e:
+    print("❌ Firebase initialization failed:", e)
+    raise
 
 # -------- GOOGLE SHEETS SETUP --------
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name("gsheet_key.json", scope)
-client = gspread.authorize(creds)
+def get_gsheet_creds():
+    gsheet_env = os.environ.get("GSHEET_KEY_JSON")
+    if gsheet_env:
+        return ServiceAccountCredentials.from_json_keyfile_dict(json.loads(gsheet_env), [
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/drive"
+        ])
+    if os.path.exists("gsheet_key.json"):
+        return ServiceAccountCredentials.from_json_keyfile_name("gsheet_key.json", [
+            "https://spreadsheets.google.com/feeds",
+            "https://www.googleapis.com/auth/drive"
+        ])
+    raise RuntimeError("Google Sheets credentials not found in environment variable or gsheet_key.json file.")
 
-# Open your Google Sheet (make sure you created one!)
-sheet = client.open("JoinUs Submissions").sheet1  # name of your sheet
-
+try:
+    creds = get_gsheet_creds()
+    client = gspread.authorize(creds)
+    sheet = client.open("JoinUs Submissions").sheet1  # Change to your sheet name
+except Exception as e:
+    print("❌ Google Sheets initialization failed:", e)
+    sheet = None  # So app doesn't crash if secrets are missing on first deploy
 
 # ----------------- Flask Init -----------------
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  # change to a long random string
-
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")  # Use env for prod
 
 # ----------------- Helpers -----------------
 def login_required(f):
@@ -34,7 +62,6 @@ def login_required(f):
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated_function
-
 
 # ----------------- Routes -----------------
 @app.route('/')
@@ -155,13 +182,20 @@ def join():
         updated.to_excel("join_data.xlsx", index=False)
 
         # -------- Save to Google Sheets (online) --------
-        sheet.append_row([name, email, mobile, city])
+        if sheet:
+            try:
+                sheet.append_row([name, email, mobile, city])
+            except Exception as e:
+                print("Google Sheets append_row error:", e)
+                flash("⚠️ Could not save to Google Sheets, but your data is backed up locally.", "warning")
+        else:
+            print("Google Sheets sheet object not initialized.")
+            flash("⚠️ Could not save to Google Sheets, but your data is backed up locally.", "warning")
 
         flash("✅ Thank you for joining! Your information has been saved.", "success")
         return redirect(url_for("home"))
     
     return render_template("join.html")
-
 
 if __name__ == "__main__":
     app.run(debug=True)
