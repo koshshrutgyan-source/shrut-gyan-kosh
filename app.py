@@ -106,36 +106,70 @@ def search():
         flash("⚠️ Please login to use search functionality!", "warning")
         return redirect(url_for("login"))
 
-    query = request.args.get("q", "")
+    query = request.args.get("q", "").strip()
+    category = request.args.get("category", "").strip()
+    topic = request.args.get("topic", "").strip()
+    year = request.args.get("year", "").strip()
+    availability = request.args.get("availability", "").strip()
+
     page = int(request.args.get("page", 1))
     per_page = 10
 
     try:
-        df = pd.read_excel("books.xlsx")  # change filename if needed
+        df = pd.read_excel("books.xlsx")  # make sure columns exist in your file
     except FileNotFoundError:
         flash("⚠️ Books database not found!", "danger")
         return render_template("search.html", results=[], query=query, page=page, total=0, per_page=per_page)
 
     results_df = df.copy()
 
+    # --- Base search ---
     if query:
-        results_df = df[
-            df['Name Of Book'].str.contains(query, case=False, na=False) |
-            df['Writter Name'].str.contains(query, case=False, na=False) |
-            df['Langauge/ Script'].str.contains(query, case=False, na=False)
+        results_df = results_df[
+            results_df['Name Of Book'].str.contains(query, case=False, na=False) |
+            results_df['Writter Name'].str.contains(query, case=False, na=False) |
+            results_df['Langauge/ Script'].str.contains(query, case=False, na=False)
         ]
+
+    # --- Filters ---
+    if category:
+        results_df = results_df[results_df['Category'] == category]
+
+    if topic:
+        results_df = results_df[results_df['Topic'] == topic]
+
+    if year:
+        try:
+            results_df = results_df[results_df['Year of Publication'] == int(year)]
+        except:
+            pass  # ignore invalid year input
+
+    if availability:
+        results_df = results_df[results_df['Availability'] == availability]
 
     total = len(results_df)
     start = (page - 1) * per_page
     end = start + per_page
     paginated = results_df.iloc[start:end].to_dict(orient="records")
 
+    # For dropdowns: get unique values
+    categories = sorted(df['Category'].dropna().unique().tolist()) if 'Category' in df else []
+    topics = sorted(df['Topic'].dropna().unique().tolist()) if 'Topic' in df else []
+    years = sorted(df['Year of Publication'].dropna().unique().tolist()) if 'Year of Publication' in df else []
+
     return render_template("search.html",
                            results=paginated,
                            query=query,
                            page=page,
                            total=total,
-                           per_page=per_page)
+                           per_page=per_page,
+                           category=category,
+                           topic=topic,
+                           year=year,
+                           availability=availability,
+                           categories=categories,
+                           topics=topics,
+                           years=years)
 
 @app.route('/about')
 def about():
