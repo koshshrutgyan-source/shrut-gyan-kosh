@@ -116,7 +116,7 @@ def search():
     per_page = 10
 
     try:
-        df = pd.read_excel("books.xlsx")  # make sure columns exist in your file
+        df = pd.read_excel("books.xlsx")  # make sure books.xlsx exists in repo
     except FileNotFoundError:
         flash("⚠️ Books database not found!", "danger")
         return render_template("search.html", results=[], query=query, page=page, total=0, per_page=per_page)
@@ -131,45 +131,28 @@ def search():
             results_df['Langauge/ Script'].str.contains(query, case=False, na=False)
         ]
 
-    # --- Filters ---
-    #if category:
-        #results_df = results_df[results_df['Category'] == category]
-
+    # --- Filters (you can uncomment later if needed) ---
     if topic:
         results_df = results_df[results_df['Topic'] == topic]
-
-#if year:
-        #try:
-            #results_df = results_df[results_df['Year of Publication'] == int(year)]
-        #except:
-            #pass  # ignore invalid year input
-
-    #if availability:
-        #results_df = results_df[results_df['Availability'] == availability]
 
     total = len(results_df)
     start = (page - 1) * per_page
     end = start + per_page
     paginated = results_df.iloc[start:end].to_dict(orient="records")
 
-    # For dropdowns: get unique values
-    categories = sorted(df['Category'].dropna().unique().tolist()) if 'Category' in df else []
+    # Dropdown values
     topics = sorted(df['Topic'].dropna().unique().tolist()) if 'Topic' in df else []
-    years = sorted(df['Year of Publication'].dropna().unique().tolist()) if 'Year of Publication' in df else []
 
-    return render_template("search.html",
-                           results=paginated,
-                           query=query,
-                           page=page,
-                           total=total,
-                           per_page=per_page,
-                           #category=category,
-                           topic=topic,
-                           #year=year,
-                           #availability=availability,
-                           #categories=categories,
-                           topics=topics,
-                           #years=years)
+    return render_template(
+        "search.html",
+        results=paginated,
+        query=query,
+        page=page,
+        total=total,
+        per_page=per_page,
+        topic=topic,
+        topics=topics
+    )
 
 @app.route('/about')
 def about():
