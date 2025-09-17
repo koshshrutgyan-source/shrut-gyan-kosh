@@ -132,20 +132,20 @@ def search():
         ]
 
     # --- Filters ---
-    if category:
-        results_df = results_df[results_df['Category'] == category]
+    #if category:
+        #results_df = results_df[results_df['Category'] == category]
 
     if topic:
         results_df = results_df[results_df['Topic'] == topic]
 
-    if year:
-        try:
-            results_df = results_df[results_df['Year of Publication'] == int(year)]
-        except:
-            pass  # ignore invalid year input
+#if year:
+        #try:
+            #results_df = results_df[results_df['Year of Publication'] == int(year)]
+        #except:
+            #pass  # ignore invalid year input
 
-    if availability:
-        results_df = results_df[results_df['Availability'] == availability]
+    #if availability:
+        #results_df = results_df[results_df['Availability'] == availability]
 
     total = len(results_df)
     start = (page - 1) * per_page
@@ -163,13 +163,13 @@ def search():
                            page=page,
                            total=total,
                            per_page=per_page,
-                           category=category,
+                           #category=category,
                            topic=topic,
-                           year=year,
-                           availability=availability,
-                           categories=categories,
+                           #year=year,
+                           #availability=availability,
+                           #categories=categories,
                            topics=topics,
-                           years=years)
+                           #years=years)
 
 @app.route('/about')
 def about():
