@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 style="text-align:center; margin-bottom:20px;">🛠 Admin Panel</h1>
+
+<!-- ----------------- User Profiles ----------------- -->
+<section style="margin-bottom:40px;">
+  <h2>User Profiles</h2>
+  {% if profiles %}
+    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
+      <thead style="background:#4CAF50; color:white;">
+        <tr>
+          <th>Username / Email</th>
+          <th>Mobile</th>
+          <th>Date of Birth</th>
+          <th>Qualification</th>
+          <th>Profile Picture</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in profiles %}
+        <tr>
+          <td>{{ user.name or user.email }}</td>
+          <td>{{ user.mobile }}</td>
+          <td>{{ user.dob }}</td>
+          <td>{{ user.qualification }}</td>
+          <td>
+            {% if user.profile_pic %}
+              <img src="{{ user.profile_pic }}" alt="Profile" width="50" height="50">
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No user profiles found.</p>
+  {% endif %}
+</section>
+
+<!-- ----------------- Join Us Submissions ----------------- -->
+<section>
+  <h2>Join Us Submissions</h2>
+  {% if join_data %}
+    <table border="1" cellpadding="8" cellspacing="0" style="width:100%; border-collapse:collapse;">
+      <thead style="background:#2196F3; color:white;">
+        <tr>
+          {% for key in join_data[0].keys() %}
+            <th>{{ key }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in join_data %}
+        <tr>
+          {% for value in row.values() %}
+            <td>{{ value }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No Join Us submissions found.</p>
+  {% endif %}
+</section>
+
+{% endblock %}
