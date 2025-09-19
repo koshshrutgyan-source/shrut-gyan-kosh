@@ -24,7 +24,6 @@ except Exception as e:
     print("❌ Firebase initialization failed:", e)
     raise
 
-# Firestore client
 db = firestore.client()
 
 # -------- GOOGLE SHEETS SETUP --------
@@ -101,11 +100,15 @@ def logout():
     flash("❌ Logged out successfully.", "danger")
     return redirect(url_for("home"))
 
-# ----------------- SEARCH -----------------
+# ----------------- Search -----------------
 @app.route('/search')
-@login_required
 def search():
+    if "user" not in session:
+        flash("⚠️ Please login to use search functionality!", "warning")
+        return redirect(url_for("login"))
+
     query = request.args.get("q", "").strip()
+    topic = request.args.get("topic", "").strip()
     page = int(request.args.get("page", 1))
     per_page = 10
 
@@ -116,34 +119,58 @@ def search():
         return render_template("search.html", results=[], query=query, page=page, total=0, per_page=per_page)
 
     results_df = df.copy()
+
     if query:
-        results_df = df[
-            df['Name Of Book'].str.contains(query, case=False, na=False) |
-            df['Writter Name'].str.contains(query, case=False, na=False) |
-            df['Langauge/ Script'].str.contains(query, case=False, na=False)
+        results_df = results_df[
+            results_df['Name Of Book'].str.contains(query, case=False, na=False) |
+            results_df['Writter Name'].str.contains(query, case=False, na=False) |
+            results_df['Langauge/ Script'].str.contains(query, case=False, na=False)
         ]
+
+    if topic:
+        results_df = results_df[results_df['Topic'] == topic]
 
     total = len(results_df)
     start = (page - 1) * per_page
     end = start + per_page
     paginated = results_df.iloc[start:end].to_dict(orient="records")
 
-    return render_template("search.html", results=paginated, query=query, page=page, total=total, per_page=per_page)
+    topics = sorted(df['Topic'].dropna().unique().tolist()) if 'Topic' in df else []
 
-# ----------------- Static Pages -----------------
+    return render_template(
+        "search.html",
+        results=paginated,
+        query=query,
+        page=page,
+        total=total,
+        per_page=per_page,
+        topic=topic,
+        topics=topics
+    )
+
 @app.route('/about')
-def about(): return render_template("about.html")
-@app.route('/team')
-def team(): return render_template("team.html")
-@app.route('/contact')
-def contact(): return render_template("contact.html")
-@app.route('/supporters')
-def supporters(): return render_template("supporters.html")
+def about():
+    return render_template("about.html")
 
-# ----------------- PROFILE -----------------
+@app.route('/team')
+def team():
+    return render_template("team.html")
+
+@app.route('/contact')
+def contact():
+    return render_template("contact.html")
+
+@app.route('/supporters')
+def supporters():
+    return render_template("supporters.html")
+
+# ----------------- Profile -----------------
 @app.route('/profile', methods=["GET", "POST"])
-@login_required
 def profile():
+    if "user" not in session:
+        flash("⚠️ Please login to access your profile.", "warning")
+        return redirect(url_for("login"))
+
     user_data = {
         "name": session.get("name") or "",
         "email": session.get("user"),
@@ -159,6 +186,7 @@ def profile():
         dob    = request.form.get("dob").strip()
         qualification = request.form.get("qualification").strip()
 
+        # Save in Firestore with NAME as document ID
         db.collection("users").document(name).set({
             "name": name,
             "email": session["user"],
@@ -173,7 +201,9 @@ def profile():
             "dob": dob,
             "qualification": qualification
         })
+
         flash("✅ Profile updated successfully!", "success")
+
     else:
         existing_name = session.get("name") or session.get("user")
         doc = db.collection("users").document(existing_name).get()
@@ -182,7 +212,7 @@ def profile():
 
     return render_template("profile.html", user=user_data)
 
-# ----------------- JOIN -----------------
+# ----------------- Join Us -----------------
 @app.route('/join', methods=["GET", "POST"])
 @login_required
 def join():
@@ -192,12 +222,19 @@ def join():
         mobile = request.form["mobile"]
         city = request.form["city"]
 
-        new_data = pd.DataFrame([{"Name": name,"Email": email,"Mobile": mobile,"City": city}])
+        new_data = pd.DataFrame([{
+            "Name": name,
+            "Email": email,
+            "Mobile": mobile,
+            "City": city
+        }])
+
         try:
             existing = pd.read_excel("join_data.xlsx")
             updated = pd.concat([existing, new_data], ignore_index=True)
         except FileNotFoundError:
             updated = new_data
+
         updated.to_excel("join_data.xlsx", index=False)
 
         if sheet:
@@ -211,30 +248,33 @@ def join():
 
         flash("✅ Thank you for joining! Your information has been saved.", "success")
         return redirect(url_for("home"))
-
+    
     return render_template("join.html")
 
-# ----------------- ADMIN PANEL -----------------
+# ----------------- Admin Panel -----------------
 ADMIN_EMAILS = ["abhyudayapjain@gmail.com", "vaibhavjain22112004@gmail.com", "colleague2@gmail.com"]
 
 @app.route('/admin')
-@login_required
 def admin_panel():
-    if session["user"] not in ADMIN_EMAILS:
+    if "user" not in session or session["user"] not in ADMIN_EMAILS:
         flash("⚠️ Admin access only.", "danger")
         return redirect(url_for("home"))
 
+    profiles = []
     profiles_ref = db.collection("users").stream()
-    profiles = [{"id": doc.id, **doc.to_dict()} for doc in profiles_ref]
+    for doc in profiles_ref:
+        data = doc.to_dict()
+        data["id"] = doc.id
+        profiles.append(data)
 
-    join_data = []
+    join_data_list = []
     if sheet:
         try:
-            join_data = sheet.get_all_records()
+            join_data_list = sheet.get_all_records()
         except Exception as e:
             print("Error fetching JoinUs data:", e)
 
-    return render_template("admin.html", profiles=profiles, join_data=join_data)
+    return render_template("admin.html", profiles=profiles, join_data=join_data_list)
 
 # ----------------- Run Flask -----------------
 if __name__ == "__main__":
