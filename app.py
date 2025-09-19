@@ -4,17 +4,15 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import pandas as pd
 from functools import wraps
 import firebase_admin
-from firebase_admin import credentials, auth
+from firebase_admin import credentials, auth, firestore
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
 # ----------------- Firebase Init -----------------
 def get_firebase_cred():
-    # Try to load from env variable (for Render/Heroku)
     firebase_env = os.environ.get("FIREBASE_KEY_JSON")
     if firebase_env:
         return credentials.Certificate(json.loads(firebase_env))
-    # Fallback: try to load from file (for local dev)
     if os.path.exists("firebase_key.json"):
         return credentials.Certificate("firebase_key.json")
     raise RuntimeError("Firebase credentials not found in environment variable or firebase_key.json file.")
@@ -25,6 +23,9 @@ try:
 except Exception as e:
     print("❌ Firebase initialization failed:", e)
     raise
+
+# Firestore client
+db = firestore.client()
 
 # -------- GOOGLE SHEETS SETUP --------
 def get_gsheet_creds():
@@ -44,14 +45,14 @@ def get_gsheet_creds():
 try:
     creds = get_gsheet_creds()
     client = gspread.authorize(creds)
-    sheet = client.open("JoinUs Submissions").sheet1  # Change to your sheet name
+    sheet = client.open("JoinUs Submissions").sheet1
 except Exception as e:
     print("❌ Google Sheets initialization failed:", e)
-    sheet = None  # So app doesn't crash if secrets are missing on first deploy
+    sheet = None
 
 # ----------------- Flask Init -----------------
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")  # Use env for prod
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecretkey")
 
 # ----------------- Helpers -----------------
 def login_required(f):
@@ -100,105 +101,105 @@ def logout():
     flash("❌ Logged out successfully.", "danger")
     return redirect(url_for("home"))
 
+# ----------------- SEARCH -----------------
 @app.route('/search')
+@login_required
 def search():
-    if "user" not in session:
-        flash("⚠️ Please login to use search functionality!", "warning")
-        return redirect(url_for("login"))
-
     query = request.args.get("q", "").strip()
-    category = request.args.get("category", "").strip()
-    topic = request.args.get("topic", "").strip()
-    year = request.args.get("year", "").strip()
-    availability = request.args.get("availability", "").strip()
-
     page = int(request.args.get("page", 1))
     per_page = 10
 
     try:
-        df = pd.read_excel("books.xlsx")  # make sure books.xlsx exists in repo
+        df = pd.read_excel("books.xlsx")
     except FileNotFoundError:
         flash("⚠️ Books database not found!", "danger")
         return render_template("search.html", results=[], query=query, page=page, total=0, per_page=per_page)
 
     results_df = df.copy()
-
-    # --- Base search ---
     if query:
-        results_df = results_df[
-            results_df['Name Of Book'].str.contains(query, case=False, na=False) |
-            results_df['Writter Name'].str.contains(query, case=False, na=False) |
-            results_df['Langauge/ Script'].str.contains(query, case=False, na=False)
+        results_df = df[
+            df['Name Of Book'].str.contains(query, case=False, na=False) |
+            df['Writter Name'].str.contains(query, case=False, na=False) |
+            df['Langauge/ Script'].str.contains(query, case=False, na=False)
         ]
-
-    # --- Filters (you can uncomment later if needed) ---
-    if topic:
-        results_df = results_df[results_df['Topic'] == topic]
 
     total = len(results_df)
     start = (page - 1) * per_page
     end = start + per_page
     paginated = results_df.iloc[start:end].to_dict(orient="records")
 
-    # Dropdown values
-    topics = sorted(df['Topic'].dropna().unique().tolist()) if 'Topic' in df else []
+    return render_template("search.html", results=paginated, query=query, page=page, total=total, per_page=per_page)
 
-    return render_template(
-        "search.html",
-        results=paginated,
-        query=query,
-        page=page,
-        total=total,
-        per_page=per_page,
-        topic=topic,
-        topics=topics
-    )
-
+# ----------------- Static Pages -----------------
 @app.route('/about')
-def about():
-    return render_template("about.html")
-
+def about(): return render_template("about.html")
 @app.route('/team')
-def team():
-    return render_template("team.html")
-
+def team(): return render_template("team.html")
 @app.route('/contact')
-def contact():
-    return render_template("contact.html")
-
+def contact(): return render_template("contact.html")
 @app.route('/supporters')
-def supporters():
-    return render_template("supporters.html")
+def supporters(): return render_template("supporters.html")
 
+# ----------------- PROFILE -----------------
+@app.route('/profile', methods=["GET", "POST"])
+@login_required
+def profile():
+    user_data = {
+        "name": session.get("name") or "",
+        "email": session.get("user"),
+        "mobile": "",
+        "dob": "",
+        "qualification": "",
+        "profile_pic": ""
+    }
+
+    if request.method == "POST":
+        name  = request.form.get("name").strip()
+        mobile = request.form.get("mobile").strip()
+        dob    = request.form.get("dob").strip()
+        qualification = request.form.get("qualification").strip()
+
+        db.collection("users").document(name).set({
+            "name": name,
+            "email": session["user"],
+            "mobile": mobile,
+            "dob": dob,
+            "qualification": qualification
+        })
+
+        user_data.update({
+            "name": name,
+            "mobile": mobile,
+            "dob": dob,
+            "qualification": qualification
+        })
+        flash("✅ Profile updated successfully!", "success")
+    else:
+        existing_name = session.get("name") or session.get("user")
+        doc = db.collection("users").document(existing_name).get()
+        if doc.exists:
+            user_data.update(doc.to_dict())
+
+    return render_template("profile.html", user=user_data)
+
+# ----------------- JOIN -----------------
 @app.route('/join', methods=["GET", "POST"])
+@login_required
 def join():
-    if "user" not in session:
-        flash("⚠️ Please login to access Join Us form.", "warning")
-        return redirect(url_for("login"))
-
     if request.method == "POST":
         name = request.form["name"]
         email = request.form["email"]
         mobile = request.form["mobile"]
         city = request.form["city"]
 
-        # -------- Save to Excel (local backup) --------
-        new_data = pd.DataFrame([{
-            "Name": name,
-            "Email": email,
-            "Mobile": mobile,
-            "City": city
-        }])
-
+        new_data = pd.DataFrame([{"Name": name,"Email": email,"Mobile": mobile,"City": city}])
         try:
             existing = pd.read_excel("join_data.xlsx")
             updated = pd.concat([existing, new_data], ignore_index=True)
         except FileNotFoundError:
             updated = new_data
-
         updated.to_excel("join_data.xlsx", index=False)
 
-        # -------- Save to Google Sheets (online) --------
         if sheet:
             try:
                 sheet.append_row([name, email, mobile, city])
@@ -206,13 +207,35 @@ def join():
                 print("Google Sheets append_row error:", e)
                 flash("⚠️ Could not save to Google Sheets, but your data is backed up locally.", "warning")
         else:
-            print("Google Sheets sheet object not initialized.")
             flash("⚠️ Could not save to Google Sheets, but your data is backed up locally.", "warning")
 
         flash("✅ Thank you for joining! Your information has been saved.", "success")
         return redirect(url_for("home"))
-    
+
     return render_template("join.html")
 
+# ----------------- ADMIN PANEL -----------------
+ADMIN_EMAILS = ["abhyudayapjain@gmail.com", "vaibhavjain22112004@gmail.com", "colleague2@gmail.com"]
+
+@app.route('/admin')
+@login_required
+def admin_panel():
+    if session["user"] not in ADMIN_EMAILS:
+        flash("⚠️ Admin access only.", "danger")
+        return redirect(url_for("home"))
+
+    profiles_ref = db.collection("users").stream()
+    profiles = [{"id": doc.id, **doc.to_dict()} for doc in profiles_ref]
+
+    join_data = []
+    if sheet:
+        try:
+            join_data = sheet.get_all_records()
+        except Exception as e:
+            print("Error fetching JoinUs data:", e)
+
+    return render_template("admin.html", profiles=profiles, join_data=join_data)
+
+# ----------------- Run Flask -----------------
 if __name__ == "__main__":
     app.run(debug=True)
