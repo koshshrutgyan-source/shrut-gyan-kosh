@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="profile-container">
+  <h2>My Profile</h2>
+  <form method="POST" class="profile-form">
+    <label>Name:</label>
+    <input type="text" name="name" value="{{ user.name }}" required>
+
+    <label>Email (cannot change):</label>
+    <input type="email" name="email" value="{{ user.email }}" readonly>
+
+   <label>Mobile:</label>
+<input type="text" name="mobile" value="{{ user.mobile }}" id="mobile" maxlength="10" 
+       pattern="\d{10}" title="Enter 10 digit mobile number" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+
+    <label>Date of Birth:</label>
+    <input type="date" name="dob" value="{{ user.dob }}">
+
+    <label>Qualification:</label>
+    <input type="text" name="qualification" value="{{ user.qualification }}">
+
+    <button type="submit" class="btn-update">Update Profile</button>
+  </form>
+</div>
+
+<style>
+/* Container styling */
+.profile-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+  animation: fadeInUp 0.8s ease;
+}
+
+/* Heading */
+.profile-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 26px;
+  color: #333;
+  position: relative;
+}
+
+.profile-container h2::after {
+  content: "";
+  width: 50px;
+  height: 3px;
+  background: #ff5722;
+  display: block;
+  margin: 8px auto 0;
+  border-radius: 2px;
+  transform: scaleX(0);
+  animation: expandLine 0.6s forwards 0.5s;
+}
+
+/* Form inputs */
+.profile-form label {
+  display: block;
+  margin: 12px 0 6px;
+  font-weight: 600;
+  color: #555;
+}
+
+.profile-form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
+}
+
+.profile-form input:focus {
+  border-color: #ff5722;
+  box-shadow: 0 0 8px rgba(255,87,34,0.4);
+  transform: scale(1.02);
+}
+
+/* Update button */
+.btn-update {
+  width: 100%;
+  padding: 12px;
+  margin-top: 20px;
+  background: linear-gradient(45deg,#ff5722,#ff9800);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-update:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(255,87,34,0.4);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {opacity: 0; transform: translateY(30px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes expandLine {
+  to {transform: scaleX(1);}
+}
+</style>
+{% endblock %}
