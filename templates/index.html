@@ -2,11 +2,14 @@
 {% block content %}
 
 <!-- Hero Section -->
-<div style="text-align:center; padding:60px; background: linear-gradient(135deg, #f0f4ff, #e6ecff); border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); animation: fadeIn 1.5s ease-in-out;">
+<div style="text-align:center; padding:60px; background: linear-gradient(135deg, #f0f4ff, #e6ecff);
+            border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: fadeIn 1.5s ease-in-out;">
     
     <!-- Logo -->
     <img src="{{ url_for('static', filename='logo.jpg') }}" alt="Shrut Gyan Kosh Logo" 
-         style="height:120px; margin-bottom:20px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.2); animation: bounce 2s infinite;">
+         style="height:120px; margin-bottom:20px; border-radius:15px;
+                box-shadow:0 4px 12px rgba(0,0,0,0.2); animation: bounce 2s infinite;">
     
     <!-- Website Name -->
     <h1 style="font-size:3rem; color:#2c3e50; margin-bottom:15px; animation: slideDown 1.2s ease-out;">
@@ -20,21 +23,33 @@
 
     <!-- Call to Action -->
     {% if session.get('user') %}
-        <!-- If logged in → go to search -->
         <a href="{{ url_for('search') }}" 
-           style="background:#4a90e2; color:white; padding:12px 25px; border-radius:8px; font-size:1.2rem; text-decoration:none; transition:0.3s; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+           style="background:#4a90e2; color:white; padding:12px 25px; border-radius:8px;
+                  font-size:1.2rem; text-decoration:none; transition:0.3s;
+                  box-shadow:0 4px 8px rgba(0,0,0,0.2);">
            🔍 Start Exploring
         </a>
     {% else %}
-        <!-- If NOT logged in → go to login -->
         <a href="{{ url_for('login') }}" 
-           style="background:#e74c3c; color:white; padding:12px 25px; border-radius:8px; font-size:1.2rem; text-decoration:none; transition:0.3s; box-shadow:0 4px 8px rgba(0,0,0,0.2);">
+           style="background:#e74c3c; color:white; padding:12px 25px; border-radius:8px;
+                  font-size:1.2rem; text-decoration:none; transition:0.3s;
+                  box-shadow:0 4px 8px rgba(0,0,0,0.2);">
            🔑 Login to Explore
         </a>
     {% endif %}
 </div>
 
-<!-- Animations -->
+<!-- 🌟 Animated Instagram Button -->
+<div style="text-align:center; margin-top:40px;">
+    <a href="https://www.instagram.com/shrutgyankosh?igsh=YjNqdTA5ZTZ2Z3A=" target="_blank" class="insta-btn">
+        <i class="fab fa-instagram"></i> Follow us on Instagram
+    </a>
+</div>
+
+<!-- Font Awesome for Instagram Icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Animations & Styles -->
 <style>
 @keyframes fadeIn {
     from { opacity: 0; }
@@ -47,6 +62,32 @@
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
+}
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 10px #E1306C, 0 0 20px #E1306C; }
+    50% { box-shadow: 0 0 20px #ff5fa2, 0 0 30px #ff5fa2; }
+}
+
+.insta-btn {
+    background: linear-gradient(45deg, #E1306C, #ff5fa2);
+    color: white;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    animation: glowPulse 2s infinite, fadeIn 2s ease-in-out;
+    transition: transform 0.3s ease;
+}
+.insta-btn i {
+    font-size: 1.6rem;
+}
+.insta-btn:hover {
+    transform: scale(1.1) rotate(-1deg);
+    background: linear-gradient(45deg, #ff5fa2, #E1306C);
 }
 </style>
 
