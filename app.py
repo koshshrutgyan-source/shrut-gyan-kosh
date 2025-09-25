@@ -100,13 +100,10 @@ def logout():
     flash("❌ Logged out successfully.", "danger")
     return redirect(url_for("home"))
 
-# ----------------- Search -----------------
+# ----------------- Search (✅ Login OPTIONAL) -----------------
 @app.route('/search')
 def search():
-    if "user" not in session:
-        flash("⚠️ Please login to use search functionality!", "warning")
-        return redirect(url_for("login"))
-
+    # 🔓 Anyone can search now – no login check
     query = request.args.get("q", "").strip()
     topic = request.args.get("topic", "").strip()
     page = int(request.args.get("page", 1))
@@ -116,7 +113,8 @@ def search():
         df = pd.read_excel("books.xlsx")
     except FileNotFoundError:
         flash("⚠️ Books database not found!", "danger")
-        return render_template("search.html", results=[], query=query, page=page, total=0, per_page=per_page)
+        return render_template("search.html", results=[], query=query, page=page,
+                               total=0, per_page=per_page)
 
     results_df = df.copy()
 
@@ -186,7 +184,6 @@ def profile():
         dob    = request.form.get("dob").strip()
         qualification = request.form.get("qualification").strip()
 
-        # Save in Firestore with NAME as document ID
         db.collection("users").document(name).set({
             "name": name,
             "email": session["user"],
