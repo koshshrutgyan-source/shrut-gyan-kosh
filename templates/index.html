@@ -21,22 +21,34 @@
         Unlocking Knowledge, Preserving Wisdom
     </p>
 
-    <!-- Call to Action -->
-    {% if session.get('user') %}
-        <a href="{{ url_for('search') }}" 
-           style="background:#4a90e2; color:white; padding:12px 25px; border-radius:8px;
-                  font-size:1.2rem; text-decoration:none; transition:0.3s;
-                  box-shadow:0 4px 8px rgba(0,0,0,0.2);">
-           🔍 Start Exploring
-        </a>
-    {% else %}
+<!-- Call to Action -->
+{% if session.get('user') %}
+    <!-- Logged-in users: Start Exploring -->
+    <a href="{{ url_for('search') }}" 
+       style="background:#4a90e2; color:white; padding:12px 25px; border-radius:8px;
+              font-size:1.2rem; text-decoration:none; transition:0.3s;
+              box-shadow:0 4px 8px rgba(0,0,0,0.2); display:inline-block; margin-bottom:20px;">
+       🔍 Start Exploring
+    </a>
+{% else %}
+    <!-- Not logged in: Explore (direct to search) -->
+    <a href="{{ url_for('search') }}" 
+       style="background:#4a90e2; color:white; padding:12px 25px; border-radius:8px;
+              font-size:1.2rem; text-decoration:none; transition:0.3s;
+              box-shadow:0 4px 8px rgba(0,0,0,0.2); display:inline-block; margin-bottom:15px;">
+       🔎 Click Here to Explore
+    </a>
+
+    <!-- New Login Button -->
+    <div style="margin-top:25px;">
         <a href="{{ url_for('login') }}" 
            style="background:#e74c3c; color:white; padding:12px 25px; border-radius:8px;
                   font-size:1.2rem; text-decoration:none; transition:0.3s;
-                  box-shadow:0 4px 8px rgba(0,0,0,0.2);">
-           🔑 Login to Explore
+                  box-shadow:0 4px 8px rgba(0,0,0,0.2); display:inline-block;">
+           🔑 Click Here to Login
         </a>
-    {% endif %}
+    </div>
+{% endif %}
 </div>
 
 <!-- 🌟 Animated Instagram Button -->
